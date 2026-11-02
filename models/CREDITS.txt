@@ -1,0 +1,13 @@
+3D bone models in this folder (hand.glb, skull.glb, body.glb)
+
+BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International
+https://dbarchive.biosciencedbc.jp/en/bodyparts3d/
+https://creativecommons.org/licenses/by/4.0/
+
+Changes made for this app: selected the skeleton parts of Release 4.0 (is-a tree), merged,
+simplified or smoothed them, added lighting and surface data to each point, and compressed them.
+The build script is tools/build-models.mjs.
+
+Note on the licence: the licence page linked above, last updated 2025-02-27 when checked on
+2026-11-02, states CC BY 4.0. The header inside each original .obj file (dated 2011) still names
+the older licence, CC BY-SA 2.1 Japan, and links to that same page.

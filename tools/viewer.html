@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bone viewer</title>
+<style>html,body{margin:0;height:100%;background:#2a2d31}canvas{position:fixed;inset:0;width:100%;height:100%}</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+// A development tool for inspecting the 3D models in their standing pose. Not part of the app.
+import * as THREE from 'three';
+import { BoneScene } from '../render3d.js';
+
+const canvas = document.getElementById('c');
+const bones = new BoneScene(canvas);
+let meshes = [];
+const W = innerWidth, H = innerHeight;
+bones.setSize(W, H);
+
+async function show({ model = 'hand', yaw = 0, pitch = 0, mm = 1, look = 'bone', keys = null, cx = null, cy = null, cz = null, flip = false } = {}) {
+  const { parts, meta } = await bones.loadModel(model, `../models/${model}.glb?${Date.now()}`);
+  bones.removeMeshes(meshes);
+  const list = Object.values(parts).filter((p) => !keys || keys.includes(p.key));
+  meshes = bones.addMeshes(list);
+  // Centre on the chosen parts
+  const box = new THREE.Box3();
+  for (const p of list) {
+    p.geometry.computeBoundingBox();
+    box.union(p.geometry.boundingBox.clone().applyMatrix4(p.rest));
+  }
+  const c = box.getCenter(new THREE.Vector3());
+  if (cx !== null) c.x = cx;
+  if (cy !== null) c.y = cy;
+  if (cz !== null) c.z = cz;
+  const size = box.getSize(new THREE.Vector3()).length();
+  const scale = (Math.min(W, H) / size) * 1.25 * mm;
+  // Model axes: +X the person's left, +Y their back, +Z up. Seen from the front:
+  // the person's left is on our right, up is up, and their back is away from us.
+  const toView = new THREE.Matrix4().makeBasis(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 1, 0));
+  const spin = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(pitch, yaw, 0, 'XYZ'));
+  const M = new THREE.Matrix4()
+    .makeTranslation(W / 2, H / 2, 0)
+    .multiply(new THREE.Matrix4().makeScale(scale, scale, scale))
+    .multiply(spin)
+    .multiply(toView)
+    .multiply(new THREE.Matrix4().makeTranslation(-c.x, -c.y, -c.z));
+  meshes.forEach((m) => {
+    m.matrix.copy(M).multiply(m.userData.part.rest);
+    m.matrixWorld.copy(m.matrix);
+    m.visible = true;
+  });
+  bones.setLook(look);
+  bones.render(size * scale * 0.3);
+  return { parts: list.length, meta: Object.keys(meta) };
+}
+window.show = show;
+window.bones = bones;
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "xray-scanner-tools",
+  "private": true,
+  "type": "module",
+  "description": "Turns the BodyParts3D bone files into the small 3D models the app loads. Not needed to run the app.",
+  "dependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "meshoptimizer": "1.3.0"
+  }
+}
