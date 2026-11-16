@@ -644,6 +644,49 @@ function quizClicked() {
   startCountdown(VIEWS[state.view].timer, beginQuiz);
 }
 
+// The same credit line as on screen, along the bottom of every saved picture
+function drawCredit(o, w, h) {
+  const lead = 'X-Ray Scanner App © 2026 by ';
+  const name = 'Vishal Bhoir';
+  const fonts = (px) => [
+    `${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`,
+    `600 ${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`,
+  ];
+  const measure = (px) => {
+    const [plain, bold] = fonts(px);
+    o.font = plain;
+    const leadW = o.measureText(lead).width;
+    o.font = bold;
+    return { leadW, nameW: o.measureText(name).width };
+  };
+  // About the size of a caption, but never wider than the picture
+  let px = Math.max(12, Math.round(Math.min(w, h) * 0.028));
+  let m = measure(px);
+  const widest = w * 0.92;
+  const total = () => m.leadW + m.nameW + px * 1.6;
+  if (total() > widest) {
+    px = Math.max(8, Math.floor(px * (widest / total())));
+    m = measure(px);
+  }
+  const [plain, bold] = fonts(px);
+  const padX = px * 0.8, boxH = px * 1.9, boxW = m.leadW + m.nameW + padX * 2;
+  const x = (w - boxW) / 2, y = h - boxH - px * 0.8;
+  o.save();
+  o.fillStyle = 'rgba(0, 0, 0, 0.5)';
+  o.beginPath();
+  if (o.roundRect) o.roundRect(x, y, boxW, boxH, boxH / 2);
+  else o.rect(x, y, boxW, boxH);
+  o.fill();
+  o.textBaseline = 'middle';
+  o.font = plain;
+  o.fillStyle = 'rgba(232, 243, 255, 0.92)';
+  o.fillText(lead, x + padX, y + boxH / 2);
+  o.font = bold;
+  o.fillStyle = '#5cc8ff';
+  o.fillText(name, x + padX + m.leadW, y + boxH / 2);
+  o.restore();
+}
+
 function savePicture() {
   const src = state.mode === 'photo' ? photo : video;
   const w = canvas.width, h = canvas.height;
@@ -675,6 +718,7 @@ function savePicture() {
   scene3d.render();
   o.drawImage($('bones3d'), 0, 0, w, h);
   o.drawImage(canvas, 0, 0);
+  drawCredit(o, w, h);
   lastRender = '';
   out.toBlob((blob) => {
     const a = document.createElement('a');
