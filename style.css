@@ -264,6 +264,15 @@ button:disabled { cursor: default; opacity: 0.55; }
 .status { min-height: 1.4em; color: var(--accent-2); font-size: 13px; }
 .fine { color: var(--muted); font-size: 12px; margin-top: 18px; }
 .fine.credit { font-size: 11px; margin-top: 8px; opacity: 0.8; }
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.footer a:hover, .footer a:focus-visible { text-decoration: underline; }
 
 [hidden] { display: none !important; }
 
