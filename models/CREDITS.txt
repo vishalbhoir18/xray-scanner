@@ -8,6 +8,9 @@ Changes made for this app: selected the skeleton parts of Release 4.0 (is-a tree
 simplified or smoothed them, added lighting and surface data to each point, and compressed them.
 The build script is tools/build-models.mjs.
 
+The X-ray pictures in images/ (hand, skull, chest, knee) are rendered from these same models
+in the app's X-ray film look, so the same credit applies to them.
+
 Note on the licence: the licence page linked above, last updated 2025-02-27 when checked on
 2026-11-02, states CC BY 4.0. The header inside each original .obj file (dated 2011) still names
 the older licence, CC BY-SA 2.1 Japan, and links to that same page.

@@ -42,6 +42,7 @@ These are 3D models of one adult man's anatomy, stretched to fit the tracked joi
 | `facts.js` | Every bone's name, meaning, fun fact and quiz clue. Edit this to change the wording |
 | `quiz.js` | Quiz rules and scoring |
 | `models/` | The three 3D models (2.6 MB in total) and their credits |
+| `images/` | X-ray pictures for the start screen, rendered from the 3D models in the X-ray film look |
 | `server.mjs` | A tiny local web server for testing on this computer |
 | `tools/` | Builds the models from the original bone files. Not needed to run the app |
 
@@ -62,7 +63,7 @@ Phones only allow the camera on **https://** websites. GitHub Pages provides tha
 **In the browser:**
 
 1. Create a new **public** repository on GitHub, for example `xray-scanner`.
-2. Choose **uploading an existing file** and drag in `index.html`, `style.css`, `app.js`, `rig.js`, `render3d.js`, `overlay.js`, `facts.js`, `quiz.js` and the whole `models` folder. Commit them.
+2. Choose **uploading an existing file** and drag in `index.html`, `style.css`, `app.js`, `rig.js`, `render3d.js`, `overlay.js`, `facts.js`, `quiz.js` and the whole `models` and `images` folders. Commit them.
 3. Go to **Settings → Pages**. Under "Build and deployment", pick **Deploy from a branch**, then branch **main** and folder **/ (root)**, and save.
 4. After a minute or two the site is at `https://YOUR-USERNAME.github.io/xray-scanner/`. Open that on your phone and allow the camera.
 

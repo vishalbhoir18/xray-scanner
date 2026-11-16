@@ -240,8 +240,67 @@ button:disabled { cursor: default; opacity: 0.55; }
   overflow-y: auto;
 }
 .start .card {
+  position: relative;
+  z-index: 1;
   width: min(400px, 100%);
   text-align: center;
+}
+
+/* X-ray pictures around the edges, kept faint behind the text */
+.start-art {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.start-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 54% at 50% 50%, rgba(5, 9, 15, 0.84) 0%, rgba(5, 9, 15, 0.55) 58%, rgba(5, 9, 15, 0.08) 100%);
+}
+.xr {
+  position: absolute;
+  width: var(--size);
+  height: auto;
+  opacity: 0;
+  transform: rotate(var(--r));
+  animation: xr-in 1.6s ease-out var(--delay) forwards, xr-drift 18s ease-in-out var(--delay) infinite;
+}
+.xr-hand  { --size: min(80vw, 470px); --r: -14deg; --o: 0.55; --delay: 0s;   top: -6%;    left: -18%; }
+.xr-skull { --size: min(58vw, 380px); --r: 10deg;  --o: 0.5;  --delay: 0.3s; top: 4%;     right: -16%; }
+.xr-chest { --size: min(82vw, 520px); --r: 5deg;   --o: 0.42; --delay: 0.6s; bottom: -7%;  left: -28%; }
+.xr-knee  { --size: min(54vw, 340px); --r: -9deg;  --o: 0.48; --delay: 0.9s; bottom: -1%;  right: -15%; }
+
+/* On wide screens there is room to show them whole, around the text */
+@media (min-width: 900px) {
+  .xr-hand  { --size: min(44vh, 460px); top: 4%;  left: 6%; }
+  .xr-skull { --size: min(40vh, 400px); top: 3%;  right: 7%; }
+  .xr-chest { --size: min(52vh, 520px); bottom: -6%; left: 4%; }
+  .xr-knee  { --size: min(42vh, 400px); bottom: -2%; right: 8%; }
+}
+
+/* A faint band of light sweeping down, like a scanner */
+.xr-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -30vh;
+  height: 26vh;
+  background: linear-gradient(to bottom, transparent, rgba(92, 200, 255, 0.09) 50%, transparent);
+  animation: xr-scan 7s linear infinite;
+}
+
+@keyframes xr-in { to { opacity: var(--o); } }
+@keyframes xr-drift {
+  0%, 100% { transform: rotate(var(--r)) translateY(0); }
+  50% { transform: rotate(calc(var(--r) + 2deg)) translateY(-12px); }
+}
+@keyframes xr-scan { to { transform: translateY(160vh); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .xr { animation: none; opacity: var(--o); }
+  .xr-scan { display: none; }
 }
 .logo {
   width: 84px; height: 84px;
