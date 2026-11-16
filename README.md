@@ -20,7 +20,9 @@ These are 3D models of one adult man's anatomy, stretched to fit the tracked joi
 - **Freeze** (big round button) holds the picture so you can tap calmly.
 - **Timer** freezes the picture after 5 seconds, so you have time to step back. The quiz does this too (3 seconds for Hand and Skull, 5 for Body).
 - **Photo** button: load a picture instead of using the camera.
-- **Labels** and **Colours** change how the bones are shown. **Save** downloads a picture.
+- **Labels** and **Colours** change how the bones are shown.
+- **Save** makes a picture with the credit and @the_bioway on it. On phones you can then **Share** it straight to WhatsApp, Instagram and other apps, with a link to the app; elsewhere it downloads.
+- A friendly **invite to subscribe and follow** sits on the start screen (it can be hidden) and appears after each quiz. Nobody has to follow to use the app.
 
 ## How it works
 
@@ -41,6 +43,7 @@ These are 3D models of one adult man's anatomy, stretched to fit the tracked joi
 | `overlay.js` | The soft flesh shading, labels and name tags |
 | `facts.js` | Every bone's name, meaning, fun fact and quiz clue. Edit this to change the wording |
 | `quiz.js` | Quiz rules and scoring |
+| `social.js` | Your YouTube and Instagram links and handle. Change them here and every invite button, share message and saved-picture credit updates |
 | `models/` | The three 3D models (2.6 MB in total) and their credits |
 | `images/` | X-ray pictures for the start screen, rendered from the 3D models in the X-ray film look |
 | `server.mjs` | A tiny local web server for testing on this computer |
@@ -63,7 +66,7 @@ Phones only allow the camera on **https://** websites. GitHub Pages provides tha
 **In the browser:**
 
 1. Create a new **public** repository on GitHub, for example `xray-scanner`.
-2. Choose **uploading an existing file** and drag in `index.html`, `style.css`, `app.js`, `rig.js`, `render3d.js`, `overlay.js`, `facts.js`, `quiz.js` and the whole `models` and `images` folders. Commit them.
+2. Choose **uploading an existing file** and drag in `index.html`, `style.css`, `app.js`, `rig.js`, `render3d.js`, `overlay.js`, `facts.js`, `quiz.js`, `social.js` and the whole `models` and `images` folders. Commit them.
 3. Go to **Settings → Pages**. Under "Build and deployment", pick **Deploy from a branch**, then branch **main** and folder **/ (root)**, and save.
 4. After a minute or two the site is at `https://YOUR-USERNAME.github.io/xray-scanner/`. Open that on your phone and allow the camera.
 

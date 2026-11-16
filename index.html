@@ -54,6 +54,13 @@
     </div>
     <h2 id="quizQuestion"></h2>
     <p id="quizFeedback" class="quiz-feedback"></p>
+    <div id="quizInvite" class="quiz-invite" hidden>
+      <p>Enjoyed the quiz? Subscribe and follow <b>@the_bioway</b> for more.</p>
+      <div class="invite-links">
+        <a class="invite-btn yt" data-social="youtube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>YouTube</a>
+        <a class="invite-btn ig" data-social="instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.1" fill="currentColor"/></svg>Instagram</a>
+      </div>
+    </div>
     <div class="quiz-actions">
       <button id="quizHint" class="pill">Clue</button>
       <button id="quizSkip" class="pill">Skip</button>
@@ -82,7 +89,7 @@
       <button id="btnFlip" class="round" title="Switch camera" aria-label="Switch camera">
         <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2M20 4v4h-4M4 20v-4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <button id="btnSave" class="round" title="Save picture" aria-label="Save picture">
+      <button id="btnSave" class="round" title="Save or share a picture" aria-label="Save or share a picture">
         <svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -90,6 +97,19 @@
 
   <!-- Credit line under the camera buttons; stays visible during the quiz -->
   <footer id="appFooter" class="app-footer" hidden>X-Ray Scanner App © 2026 by <a href="https://linktr.ee/thebioway" target="_blank" rel="noopener">Vishal Bhoir</a></footer>
+
+  <!-- Picture ready: share it or save it -->
+  <section id="shareSheet" class="share-sheet" hidden>
+    <img id="shareThumb" alt="Your X-ray picture" />
+    <div>
+      <p class="share-title">Your picture is ready</p>
+      <div class="share-actions">
+        <button id="shareBtn" class="pill strong">Share</button>
+        <button id="downloadBtn" class="pill">Save to device</button>
+      </div>
+    </div>
+    <button id="shareClose" class="close" aria-label="Close">×</button>
+  </section>
 
   <!-- Bone info sheet -->
   <section id="info" class="info" hidden>
@@ -124,6 +144,14 @@
       <button id="btnStart" class="primary" disabled>Loading…</button>
       <button id="btnStartPhoto" class="secondary" disabled>Use a photo instead</button>
       <p id="status" class="status"></p>
+      <div id="invite" class="invite">
+        <button id="inviteClose" class="invite-close" aria-label="Hide this">×</button>
+        <p class="invite-text">Enjoying X-Ray Scanner? Subscribe and follow <b>@the_bioway</b> for more.</p>
+        <div class="invite-links">
+          <a class="invite-btn yt" data-social="youtube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>YouTube</a>
+          <a class="invite-btn ig" data-social="instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="7" r="1.1" fill="currentColor"/></svg>Instagram</a>
+        </div>
+      </div>
       <p class="fine">Everything runs on your device. No images are uploaded.<br />These are 3D models of one adult's anatomy, fitted to your joints. They are not your own bones and this is not a medical X-ray.</p>
       <p class="fine credit">3D bones: BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International. Adapted: simplified and re-shaded.</p>
       <footer class="footer">X-Ray Scanner App © 2026 by <a href="https://linktr.ee/thebioway" target="_blank" rel="noopener">Vishal Bhoir</a></footer>

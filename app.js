@@ -6,6 +6,7 @@ import { HandRig, BodyRig, SkullRig } from './rig.js';
 import { drawTissue, drawLabels, drawTag } from './overlay.js';
 import { BONE_INFO, GROUPS } from './facts.js';
 import { quiz, startQuiz, endQuiz, quizTap, onPlayAgain } from './quiz.js';
+import { SOCIAL } from './social.js';
 
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.1.0/wasm';
 const MODELS = 'https://storage.googleapis.com/mediapipe-models';
@@ -280,6 +281,7 @@ async function detectPhoto() {
 function setMode(mode) {
   state.mode = mode;
   closeInfo();
+  closeShareSheet();
   $('start').hidden = true;
   $('controls').hidden = false;
   $('appFooter').hidden = false;
@@ -296,6 +298,7 @@ function showStart() {
   $('start').hidden = false;
   $('controls').hidden = true;
   $('appFooter').hidden = true;
+  closeShareSheet();
 }
 
 // All the drawing layers match the size of the picture
@@ -644,47 +647,104 @@ function quizClicked() {
   startCountdown(VIEWS[state.view].timer, beginQuiz);
 }
 
-// The same credit line as on screen, along the bottom of every saved picture
+// The same credit as on screen, plus your handle, along the bottom of every saved
+// picture. Each line is a list of pieces; the bold pieces are drawn in blue.
 function drawCredit(o, w, h) {
-  const lead = 'X-Ray Scanner App © 2026 by ';
-  const name = 'Vishal Bhoir';
-  const fonts = (px) => [
-    `${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`,
-    `600 ${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`,
+  const lines = [
+    [{ text: 'X-Ray Scanner App © 2026 by ' }, { text: 'Vishal Bhoir', bold: true }],
+    [{ text: SOCIAL.handle, bold: true }, { text: ' on YouTube & Instagram' }],
   ];
-  const measure = (px) => {
-    const [plain, bold] = fonts(px);
-    o.font = plain;
-    const leadW = o.measureText(lead).width;
-    o.font = bold;
-    return { leadW, nameW: o.measureText(name).width };
-  };
+  const font = (px, bold) => `${bold ? '600 ' : ''}${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+  const widthOf = (line, px) => line.reduce((sum, piece) => {
+    o.font = font(px, piece.bold);
+    return sum + o.measureText(piece.text).width;
+  }, 0);
+  const boxWidth = (px) => Math.max(...lines.map((line) => widthOf(line, px))) + px * 1.6;
   // About the size of a caption, but never wider than the picture
   let px = Math.max(12, Math.round(Math.min(w, h) * 0.028));
-  let m = measure(px);
   const widest = w * 0.92;
-  const total = () => m.leadW + m.nameW + px * 1.6;
-  if (total() > widest) {
-    px = Math.max(8, Math.floor(px * (widest / total())));
-    m = measure(px);
-  }
-  const [plain, bold] = fonts(px);
-  const padX = px * 0.8, boxH = px * 1.9, boxW = m.leadW + m.nameW + padX * 2;
+  if (boxWidth(px) > widest) px = Math.max(8, Math.floor(px * (widest / boxWidth(px))));
+  const lineH = px * 1.4;
+  const boxW = boxWidth(px), boxH = lineH * lines.length + px * 0.6;
   const x = (w - boxW) / 2, y = h - boxH - px * 0.8;
   o.save();
   o.fillStyle = 'rgba(0, 0, 0, 0.5)';
   o.beginPath();
-  if (o.roundRect) o.roundRect(x, y, boxW, boxH, boxH / 2);
+  if (o.roundRect) o.roundRect(x, y, boxW, boxH, Math.min(boxH / 2, px));
   else o.rect(x, y, boxW, boxH);
   o.fill();
   o.textBaseline = 'middle';
-  o.font = plain;
-  o.fillStyle = 'rgba(232, 243, 255, 0.92)';
-  o.fillText(lead, x + padX, y + boxH / 2);
-  o.font = bold;
-  o.fillStyle = '#5cc8ff';
-  o.fillText(name, x + padX + m.leadW, y + boxH / 2);
+  lines.forEach((line, i) => {
+    let cx = (w - widthOf(line, px)) / 2;
+    const cy = y + px * 0.3 + lineH * (i + 0.5);
+    for (const piece of line) {
+      o.font = font(px, piece.bold);
+      o.fillStyle = piece.bold ? '#5cc8ff' : 'rgba(232, 243, 255, 0.92)';
+      o.fillText(piece.text, cx, cy);
+      cx += o.measureText(piece.text).width;
+    }
+  });
   o.restore();
+}
+
+// ---------------------------------------------------------------------------
+// A finished picture: share it straight to WhatsApp, Instagram and so on where
+// the device can, otherwise download it as before
+// ---------------------------------------------------------------------------
+let pending = null; // { file, url } of the picture waiting in the share card
+
+function appLink() {
+  return new URL('.', location.href).href;
+}
+
+function canShareFiles(file) {
+  try {
+    return Boolean(navigator.canShare && navigator.canShare({ files: [file] }));
+  } catch {
+    return false;
+  }
+}
+
+function downloadPicture(file) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(file);
+  a.download = file.name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+function offerPicture(blob, name) {
+  const file = new File([blob], name, { type: 'image/png' });
+  if (!canShareFiles(file)) {
+    downloadPicture(file);
+    return;
+  }
+  closeShareSheet();
+  closeInfo();
+  pending = { file, url: URL.createObjectURL(blob) };
+  $('shareThumb').src = pending.url;
+  $('shareSheet').hidden = false;
+}
+
+function closeShareSheet() {
+  if (pending) URL.revokeObjectURL(pending.url);
+  pending = null;
+  $('shareSheet').hidden = true;
+}
+
+async function sharePicture() {
+  if (!pending) return;
+  try {
+    await navigator.share({
+      files: [pending.file],
+      title: 'X-Ray Scanner',
+      text: `See the bones inside your hand, body or face with X-Ray Scanner by ${SOCIAL.handle}: ${appLink()}`,
+    });
+    closeShareSheet();
+  } catch (err) {
+    // Closing the share menu without picking an app is not an error
+    if (err.name !== 'AbortError') toast('Sharing did not work here. Try "Save to device".', 5000);
+  }
 }
 
 function savePicture() {
@@ -720,13 +780,7 @@ function savePicture() {
   o.drawImage(canvas, 0, 0);
   drawCredit(o, w, h);
   lastRender = '';
-  out.toBlob((blob) => {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `xray-${state.view}-${Date.now()}.png`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  }, 'image/png');
+  out.toBlob((blob) => offerPicture(blob, `xray-${state.view}-${Date.now()}.png`), 'image/png');
 }
 
 // ---------------------------------------------------------------------------
@@ -751,7 +805,24 @@ $('btnFlip').addEventListener('click', () => {
   startCamera();
 });
 $('btnSave').addEventListener('click', savePicture);
+$('shareBtn').addEventListener('click', sharePicture);
+$('downloadBtn').addEventListener('click', () => {
+  if (pending) downloadPicture(pending.file);
+  closeShareSheet();
+});
+$('shareClose').addEventListener('click', closeShareSheet);
 $('infoClose').addEventListener('click', closeInfo);
+
+// Invite buttons all point at the links in social.js
+document.querySelectorAll('[data-social]').forEach((a) => { a.href = SOCIAL[a.dataset.social]; });
+
+// The start-screen invite can be hidden, and stays hidden on this device
+const INVITE_KEY = 'xray-invite-hidden';
+try { if (localStorage.getItem(INVITE_KEY)) $('invite').hidden = true; } catch { /* storage blocked: just show it */ }
+$('inviteClose').addEventListener('click', () => {
+  $('invite').hidden = true;
+  try { localStorage.setItem(INVITE_KEY, '1'); } catch { /* not remembered, which is fine */ }
+});
 
 document.querySelectorAll('.tab').forEach((btn) => {
   btn.addEventListener('click', () => setView(btn.dataset.view));

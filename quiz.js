@@ -87,6 +87,7 @@ function ask() {
   $('quizSkip').hidden = false;
   $('quizNext').hidden = true;
   $('quizAgain').hidden = true;
+  $('quizInvite').hidden = true;
 }
 
 // "True ribs" reads better as "true ribs", but keep names like "1st metacarpal" as they are
@@ -97,7 +98,8 @@ function lowerName(name) {
 function setFeedback(text, kind) {
   const el = $('quizFeedback');
   el.textContent = text;
-  el.className = 'quiz-feedback ' + kind;
+  // Prefixed so they can't clash with other styles (plain "info" is the bone card's)
+  el.className = kind ? `quiz-feedback fb-${kind}` : 'quiz-feedback';
 }
 
 function reveal(prefix) {
@@ -153,6 +155,8 @@ function finish() {
   $('quizSkip').hidden = true;
   $('quizNext').hidden = true;
   $('quizAgain').hidden = false;
+  // A friendly invite once the round is over; "End quiz" or "Play again" moves on
+  $('quizInvite').hidden = false;
 }
 
 $('quizHint').addEventListener('click', () => setFeedback(`Clue: ${target().clue}`, 'info'));
