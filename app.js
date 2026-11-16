@@ -282,6 +282,7 @@ function setMode(mode) {
   closeInfo();
   $('start').hidden = true;
   $('controls').hidden = false;
+  $('appFooter').hidden = false;
   video.hidden = mode !== 'camera';
   photo.hidden = mode !== 'photo';
   stage.classList.toggle('fit-cover', mode === 'camera');
@@ -294,6 +295,7 @@ function setMode(mode) {
 function showStart() {
   $('start').hidden = false;
   $('controls').hidden = true;
+  $('appFooter').hidden = true;
 }
 
 // All the drawing layers match the size of the picture
